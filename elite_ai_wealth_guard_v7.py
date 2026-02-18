@@ -25,16 +25,15 @@ CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
 REDIRECT_URI = st.secrets["REDIRECT_URI"]
 
-AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/auth"
+AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
-USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo"
+USER_INFO = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 # -------------------- LOGIN FUNCTION --------------------
 def google_login():
 
     oauth = OAuth2Session(
         CLIENT_ID,
-        CLIENT_SECRET,
         scope="openid email profile",
         redirect_uri=REDIRECT_URI
     )
@@ -47,21 +46,22 @@ def google_login():
 
     return authorization_url
 
-# -------------------- CALLBACK HANDLING --------------------
+
+# -------------------- CALLBACK --------------------
 query_params = st.query_params
 
 if "code" in query_params:
 
     oauth = OAuth2Session(
         CLIENT_ID,
-        CLIENT_SECRET,
         redirect_uri=REDIRECT_URI
     )
 
     token = oauth.fetch_token(
         TOKEN_ENDPOINT,
         code=query_params["code"],
-        client_secret=CLIENT_SECRET
+        client_secret=CLIENT_SECRET,
+        include_client_id=True
     )
 
     resp = requests.get(
@@ -106,5 +106,6 @@ else:
         st.rerun()
 
     st.write("Dashboard coming next...")
+
 
 
