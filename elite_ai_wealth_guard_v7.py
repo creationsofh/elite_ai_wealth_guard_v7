@@ -47,9 +47,8 @@ def google_login():
 
     return authorization_url
 
-
 # -------------------- CALLBACK HANDLING --------------------
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 
 if "code" in query_params:
 
@@ -61,7 +60,7 @@ if "code" in query_params:
 
     token = oauth.fetch_token(
         TOKEN_ENDPOINT,
-        code=query_params["code"][0],
+        code=query_params["code"],
         client_secret=CLIENT_SECRET
     )
 
@@ -75,7 +74,6 @@ if "code" in query_params:
 
     st.session_state.user = email
 
-    # Create user if not exists
     if email not in users:
         users[email] = {
             "portfolio": [],
@@ -84,8 +82,9 @@ if "code" in query_params:
         with open(DB_FILE, "w") as f:
             json.dump(users, f)
 
-    st.experimental_set_query_params()
+    st.query_params.clear()
     st.rerun()
+
 
 # -------------------- UI --------------------
 st.title("💎 Elite AI Wealth Guard PRO")
@@ -107,4 +106,5 @@ else:
         st.rerun()
 
     st.write("Dashboard coming next...")
+
 
